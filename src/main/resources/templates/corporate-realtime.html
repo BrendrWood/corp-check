@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="username" th:content="${username}">
+    <title>Корпоративная проверка</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Наши стили -->
+    <link th:href="@{/css/corporate.css}" rel="stylesheet">
+
+</head>
+<body>
+<!-- Индикатор блокировки -->
+<div class="lock-indicator" id="lockIndicator">
+    <i class="bi bi-lock-fill me-2"></i>
+    <span id="lockOwner"></span>
+</div>
+
+<!-- Плашка онлайн пользователей с чатом -->
+<div class="online-users" id="onlineUsers" onclick="toggleChat(event)">
+    <i class="bi bi-people-fill me-2"></i>
+    <span id="onlineCount">1</span> онлайн
+    <div class="d-inline-block ms-2" id="usersList">
+        <!-- Аватарки будут добавляться динамически -->
+    </div>
+    <button class="chat-toggle" id="chatToggle" onclick="event.stopPropagation(); toggleChat(event)">
+        <i class="bi bi-chat-dots"></i>
+        <span class="unread-badge" id="unreadBadge" style="display: none;">0</span>
+    </button>
+</div>
+
+<!-- Окно чата (растягиваемое) -->
+<div class="chat-window" id="chatWindow" onclick="event.stopPropagation()">
+    <div class="chat-header" id="chatHeader">
+        <span><i class="bi bi-chat"></i> Общий чат</span>
+        <button class="btn-close btn-close-white" onclick="toggleChat(event)"></button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-footer">
+        <div class="input-group">
+            <input type="text" class="form-control" id="chatInput"
+                   placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="btn btn-primary" onclick="sendMessage()">
+                <i class="bi bi-send"></i>
+            </button>
+        </div>
+    </div>
+    <div class="resize-handle" id="resizeHandle"></div>
+</div>
+
+<div class="container-fluid mt-3">
+    <!-- Шапка -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4">
+            <i class="bi bi-building me-2" style="color: #4361ee;"></i>
+            Корпоративная проверка
+        </h2>
+        <div class="d-flex gap-3 align-items-center">
+            <button class="btn btn-success" onclick="openCreateModal()">
+                <i class="bi bi-plus-circle me-1"></i> Новая заявка
+            </button>
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="themeSwitch">
+                <label class="form-check-label" for="themeSwitch">
+                    <i class="bi bi-moon-stars"></i>
+                </label>
+            </div>
+            <span class="badge bg-primary p-2" th:text="${username}"></span>
+            <form th:action="@{/logout}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Панель поиска -->
+    <div class="search-panel mb-3">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+                    <input type="text" class="form-control" id="searchQuery"
+                           placeholder="Поиск по номеру, инженеру, комментариям, чек-боксам..."
+                           onkeyup="if(event.key==='Enter') performSearch()">
+                    <button class="btn btn-primary" onclick="performSearch()">
+                        <i class="bi bi-search"></i> Найти
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="resetSearch()">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-calendar"></i>
+                        </span>
+                    <input type="text" class="form-control" id="searchDate"
+                           placeholder="ДД.ММ.ГГГГ"
+                           onkeyup="if(event.key==='Enter') performSearch()">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="export-buttons">
+                    <button class="btn btn-sm btn-outline-success" onclick="exportToday()">
+                        <i class="bi bi-calendar-day"></i> Сегодня
+                    </button>
+                    <!-- НОВАЯ КНОПКА -->
+                    <button class="btn btn-sm btn-success" onclick="exportProcessedToday()">
+                        <i class="bi bi-check2-circle"></i> Обработано сегодня
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="exportByDate()">
+                        <i class="bi bi-calendar-week"></i> По дате
+                    </button>
+                    <button class="btn btn-sm btn-success" id="exportSearchBtn"
+                            style="display: none;" onclick="exportSearchResults()">
+                        <i class="bi bi-file-earmark-excel"></i> Экспорт результатов
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="openArchive()">
+                        <i class="bi bi-archive"></i> Архив
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика поиска -->
+        <div class="search-stats" id="searchStats">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="badge bg-primary" id="searchCount">0</span>
+                    <span class="text-muted ms-2" id="searchDescription"></span>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="clearSearch()">
+                    <i class="bi bi-arrow-counterclockwise"></i> Показать все
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры по статусам -->
+    <div class="filter-chips">
+        <span class="chip active" onclick="filterApps('all')">Все заявки</span>
+        <span class="chip" onclick="filterApps('stage1')">Ожидают ОП1</span>
+        <span class="chip" onclick="filterApps('stage2')">Ожидают ОП2</span>
+        <span class="chip" onclick="filterApps('problems')">С нарушениями</span>
+        <span class="chip" onclick="filterApps('completed')">Завершённые</span>
+    </div>
+
+    <!-- Таблица заявок -->
+    <div class="card">
+        <div class="card-header bg-white py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">
+                        <i class="bi bi-list-check me-2"></i>
+                        Список заявок
+                    </span>
+                <span class="badge bg-primary rounded-pill" id="appsCount">0</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div style="max-height: calc(100vh - 300px); overflow-y: auto;">
+                <table class="table table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width: 50px">#</th>
+                        <th style="width: 130px">Номер заявки</th>
+                        <th style="width: 150px">Инженер</th>
+                        <th style="width: 100px">Дата</th>
+                        <th style="width: 70px">ОП1</th>
+                        <th style="width: 70px">ОП2</th>
+                        <th style="width: 50px">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody id="appsTableBody">
+                    <!-- Данные загружаются динамически -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования -->
+<div class="modal fade" id="appModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Заявка</h5>
+                <div class="d-flex align-items-center ms-3">
+                    <!-- Контейнер для списка просматривающих -->
+                    <div id="applicationViewers" class="d-flex align-items-center" style="display: none !important;">
+                        <i class="bi bi-eye-fill me-1" style="color: #4361ee;"></i>
+                        <span class="me-1">Смотрят:</span>
+                        <!-- Здесь будут динамически добавляться просматривающие -->
+                    </div>
+                    <!-- Кнопка режима следования -->
+                    <button class="btn btn-outline-primary btn-sm ms-2" id="followModeBtn" onclick="toggleFollowMode()" title="Режим следования за коллегой">
+                        <i class="bi bi-person-walking"></i>
+                    </button>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Заполняется динамически -->
+            </div>
+            <div id="modalEditInfo" class="alert alert-warning mx-3" style="display: none;">
+                <i class="bi bi-pencil-fill"></i>
+                <span id="modalEditUser"></span> редактирует эту заявку
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="saveApplication()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:src="@{/js/core/constants.js}"></script>
+<script th:src="@{/js/core/utils.js}"></script>
+<script th:src="@{/js/chat/chat-resize.js}"></script>
+<script th:src="@{/js/chat/chat-core.js}"></script>
+<script th:src="@{/js/chat/chat-ui.js}"></script>
+<script th:src="@{/js/collaboration/locks.js}"></script>
+<script th:src="@{/js/collaboration/collaboration.js}"></script>
+<script th:src="@{/js/data/application-data.js}"></script>
+<script th:src="@{/js/export/export.js}"></script>
+<script th:src="@{/js/archive/archive.js}"></script>
+<script th:src="@{/js/search/search.js}"></script>
+<script th:src="@{/js/ui/datepicker.js}"></script>
+<script th:src="@{/js/ui/imei-helper.js}"></script>
+<script th:src="@{/js/ui/comments.js}"></script>
+<script th:src="@{/js/ui/modal.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

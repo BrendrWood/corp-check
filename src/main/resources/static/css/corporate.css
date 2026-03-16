@@ -1,0 +1,1161 @@
+/* ============================================
+   corporate.css - Единый файл стилей
+   ============================================ */
+
+/* CSS переменные для светлой темы (по умолчанию) */
+:root {
+    /* Основные цвета */
+    --primary: #4361ee;
+    --primary-dark: #3651d9;
+    --primary-light: #6c8cff;
+    --success: #06d6a0;
+    --success-dark: #05b586;
+    --warning: #ffd166;
+    --danger: #ef476f;
+    --dark: #073b4c;
+
+    /* Градиенты */
+    --gradient-primary: linear-gradient(135deg, #4361ee, #3651d9);
+    --gradient-header: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    --gradient-chat: linear-gradient(135deg, #4361ee, #3651d9);
+
+    /* Фоны */
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --bg-hover: #f8f9fa;
+    --bg-active: #e9ecef;
+    --bg-input-group: #ffffff;
+
+    /* Текст */
+    --text-primary: #212529;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --text-hover: #212529; /* цвет текста при наведении для светлой темы */
+
+    /* Границы */
+    --border-color: #dee2e6;
+    --border-color-light: #e9ecef;
+    --border-color-dark: #ced4da;
+
+    /* Карточки */
+    --card-bg: #ffffff;
+    --card-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+    /* Формы */
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --input-focus-border: var(--primary);
+    --input-focus-shadow: rgba(13, 110, 253, 0.25);
+
+    /* Таблицы */
+    --table-header-bg: #f8f9fa;
+    --table-row-hover: #e9ecef;
+    --table-border: #dee2e6;
+    --table-row-bg: #ffffff;
+
+    /* Статусы */
+    --app-ok: #28a745;
+    --app-nok: #dc3545;
+    --app-ok-bg: #d1e7dd;
+    --app-nok-bg: #f8d7da;
+    --app-ok-text: #0f5132;
+    --app-nok-text: #842029;
+
+    /* Информационные */
+    --info-bg: #cff4fc;
+    --info-border: #b6effb;
+    --info-text: #055160;
+
+    /* Предупреждения */
+    --warning-bg: #fff3cd;
+    --warning-border: #ffecb5;
+    --warning-text: #664d03;
+
+    /* Скроллбар */
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #888;
+    --scrollbar-thumb-hover: #555;
+
+    /* Чипсы (фильтры) */
+    --chip-bg: #f8f9fa;
+    --chip-border: #dee2e6;
+    --chip-text: #495057;
+    --chip-hover-bg: #e9ecef;
+    --chip-active-bg: var(--primary);
+    --chip-active-text: #ffffff;
+
+    /* Даты */
+    --date-group-bg: #f8f9fa;
+    --date-group-border: var(--text-muted);
+
+    /* Модальные окна */
+    --modal-header-bg: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    --modal-header-text: #495057;
+    --modal-footer-bg: #f8f9fa;
+
+    /* Индикаторы */
+    --viewer-bg: #e7f3ff;
+    --viewer-text: var(--primary);
+    --viewer-border: var(--primary);
+
+    /* Подсветка */
+    --highlight-bg: #fff3cd;
+    --highlight-border: #ffc107;
+
+    /* Плашка онлайн пользователей */
+    --online-users-bg: rgba(255, 255, 255, 0.95);
+    --online-users-border: #e0e0e0;
+    --online-users-text: #212529;
+
+    /* Календарь */
+    --calendar-bg: #ffffff;
+    --calendar-border: #dee2e6;
+    --calendar-header-bg: #f8f9fa;
+
+    /* Лупа поиска */
+    --input-group-text-bg: #ffffff;
+    --input-group-text-border: #ced4da;
+    --input-group-text-color: #495057;
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+    /* Основные цвета */
+    --primary: #6c8cff;
+    --primary-dark: #5a7aff;
+    --primary-light: #8aa6ff;
+    --success: #0acf97;
+    --warning: #f9b851;
+    --danger: #fa5c7c;
+    --dark: #0d2b3e;
+
+    /* Градиенты - серые для темной темы */
+    --gradient-primary: linear-gradient(135deg, #4a515b, #373e47);
+    --gradient-header: linear-gradient(135deg, #2d333b, #373e47);
+    --gradient-chat: linear-gradient(135deg, #4a515b, #373e47);
+
+    /* Фоны */
+    --bg-primary: #1a1e24;
+    --bg-secondary: #2d333b;
+    --bg-tertiary: #373e47;
+    --bg-hover: #3f4752;
+    --bg-active: #404854;
+    --bg-input-group: #373e47;
+
+    /* Текст */
+    --text-primary: #e9ecef;
+    --text-secondary: #ced4da;
+    --text-muted: #adb5bd;
+    --text-hover: #ffffff; /* БЕЛЫЙ текст при наведении для темной темы */
+
+    /* Границы */
+    --border-color: #4a515b;
+    --border-color-light: #3a414a;
+    --border-color-dark: #5a626b;
+
+    /* Карточки */
+    --card-bg: #2d333b;
+    --card-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+    /* Формы */
+    --input-bg: #373e47;
+    --input-border: #4a515b;
+    --input-focus-border: var(--primary);
+    --input-focus-shadow: rgba(108, 140, 255, 0.25);
+
+    /* Таблицы */
+    --table-header-bg: #2d333b;
+    --table-row-hover: #404854;
+    --table-border: #4a515b;
+    --table-row-bg: #2d333b;
+
+    /* Статусы */
+    --app-ok: #34ce57;
+    --app-nok: #ff6b6b;
+    --app-ok-bg: #1e3a2b;
+    --app-nok-bg: #3f2a2e;
+    --app-ok-text: #9ec9a0;
+    --app-nok-text: #f1aeb5;
+
+    /* Информационные */
+    --info-bg: #1e3d47;
+    --info-border: #3f6b7a;
+    --info-text: #9ee2f0;
+
+    /* Предупреждения */
+    --warning-bg: #3f3524;
+    --warning-border: #856404;
+    --warning-text: #ffd966;
+
+    /* Скроллбар */
+    --scrollbar-track: #2d333b;
+    --scrollbar-thumb: #4a515b;
+    --scrollbar-thumb-hover: #6c757d;
+
+    /* Чипсы (фильтры) */
+    --chip-bg: #373e47;
+    --chip-border: #4a515b;
+    --chip-text: #ced4da;
+    --chip-hover-bg: #3f4752;
+    --chip-active-bg: var(--primary);
+    --chip-active-text: #ffffff;
+
+    /* Даты */
+    --date-group-bg: #2d333b;
+    --date-group-border: var(--text-muted);
+
+    /* Модальные окна */
+    --modal-header-bg: linear-gradient(135deg, #2d333b 0%, #373e47 100%);
+    --modal-header-text: #e9ecef;
+    --modal-footer-bg: #2d333b;
+
+    /* Индикаторы */
+    --viewer-bg: #1e3a5f;
+    --viewer-text: #90caf9;
+    --viewer-border: #3a6b9f;
+
+    /* Подсветка */
+    --highlight-bg: #3f3524;
+    --highlight-border: #856404;
+
+    /* Плашка онлайн пользователей */
+    --online-users-bg: rgba(45, 51, 59, 0.95);
+    --online-users-border: #4a515b;
+    --online-users-text: #e9ecef;
+
+    /* Календарь */
+    --calendar-bg: #2d333b;
+    --calendar-border: #4a515b;
+    --calendar-header-bg: #373e47;
+
+    /* Лупа поиска */
+    --input-group-text-bg: #373e47;
+    --input-group-text-border: #4a515b;
+    --input-group-text-color: #adb5bd;
+}
+
+/* ============================================
+   ОБЩИЕ СТИЛИ
+   ============================================ */
+
+body {
+    background-color: var(--bg-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Контейнер */
+.container-fluid {
+    padding: 1rem;
+}
+
+/* ============================================
+   ПЛАШКА ОНЛАЙН ПОЛЬЗОВАТЕЛЕЙ
+   ============================================ */
+
+.online-users {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--online-users-bg);
+    padding: 8px 20px;
+    border-radius: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    z-index: 1050;
+    font-size: 0.95rem;
+    border: 1px solid var(--online-users-border);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    color: var(--online-users-text);
+}
+
+.online-users:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    transform: translateX(-50%) translateY(-2px);
+}
+
+/* Аватарки пользователей */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: 2px solid var(--bg-secondary);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+    z-index: 1060;
+}
+
+/* Контейнер для списка пользователей */
+#usersList {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Кнопка чата */
+.chat-toggle {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1.2rem;
+    position: relative;
+    padding: 0 5px;
+    cursor: pointer;
+}
+
+.unread-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-secondary);
+}
+
+/* ============================================
+   ОКНО ЧАТА
+   ============================================ */
+
+.chat-window {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 350px;
+    min-width: 250px;
+    min-height: 300px;
+    max-height: 650px;
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1060;
+    display: none;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    resize: both;
+    color: var(--text-primary);
+}
+
+.chat-header {
+    background: var(--gradient-chat);
+    color: white;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+}
+
+.chat-messages {
+    height: calc(100% - 110px);
+    overflow-y: auto;
+    padding: 15px;
+    background: var(--bg-primary);
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message.own {
+    align-items: flex-end;
+}
+
+.chat-message.other {
+    align-items: flex-start;
+}
+
+.message-bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    word-break: break-word;
+}
+
+.message-bubble.bg-primary {
+    background-color: var(--primary) !important;
+    color: white;
+}
+
+.message-bubble.bg-light {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary);
+}
+
+.chat-footer {
+    padding: 10px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Маркер для растягивания */
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: se-resize;
+    background: linear-gradient(135deg, transparent 50%, var(--primary) 50%);
+    border-radius: 0 0 15px 0;
+}
+
+/* ============================================
+   ИНДИКАТОРЫ
+   ============================================ */
+
+/* Индикатор блокировки */
+.lock-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--warning);
+    color: var(--warning-text);
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1070;
+    display: none;
+    animation: pulse 1.5s infinite;
+}
+
+/* Индикаторы просматривающих */
+.viewer-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: var(--viewer-bg);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--viewer-text);
+    border: 1px solid var(--viewer-border);
+    margin: 0 2px;
+}
+
+#applicationViewers {
+    background: var(--bg-tertiary);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Подсветка изменяемого поля */
+.field-highlight {
+    animation: fieldPulse 1s ease;
+}
+
+@keyframes fieldPulse {
+    0% { background-color: var(--warning-bg); }
+    50% { background-color: var(--warning-border); }
+    100% { background-color: transparent; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* ============================================
+   ПАНЕЛЬ ПОИСКА
+   ============================================ */
+
+.search-panel {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin-bottom: 1rem;
+}
+
+/* Исправляем фон лупы */
+.input-group-text {
+    background-color: var(--bg-input-group) !important;
+    border: 1px solid var(--input-group-text-border) !important;
+    color: var(--input-group-text-color) !important;
+}
+
+.input-group-text.bg-white {
+    background-color: var(--bg-input-group) !important;
+}
+
+/* Статистика поиска */
+.search-stats {
+    background-color: var(--info-bg);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 10px;
+    display: none;
+    color: var(--info-text);
+    border-left: 4px solid var(--info-border);
+}
+
+/* ============================================
+   ФИЛЬТРЫ (ЧИПСЫ)
+   ============================================ */
+
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.chip {
+    padding: 6px 16px;
+    border-radius: 30px;
+    background: var(--chip-bg);
+    border: 1px solid var(--chip-border);
+    color: var(--chip-text);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.chip:hover {
+    background: var(--chip-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chip.active {
+    background: var(--chip-active-bg);
+    color: var(--chip-active-text);
+    border-color: var(--chip-active-bg);
+    font-weight: 500;
+}
+
+/* ============================================
+   ТАБЛИЦА ЗАЯВОК - ИСПРАВЛЕННЫЙ HOVER
+   ============================================ */
+
+.table {
+    color: var(--text-primary);
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: var(--table-header-bg);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 10px 8px;
+    border-bottom: 2px solid var(--table-border);
+    color: var(--text-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table td {
+    padding: 8px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--table-border);
+    color: var(--text-primary);
+    background-color: var(--table-row-bg);
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Заголовок "Список заявок" в карточке */
+.card-header {
+    background-color: var(--table-header-bg) !important;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.app-row {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Стили для строки при наведении */
+.app-row:hover {
+    background-color: var(--table-row-hover) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.app-row:hover td {
+    background-color: var(--table-row-hover) !important;
+    color: var(--text-hover) !important; /* ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ ДЛЯ ЦВЕТА ТЕКСТА */
+}
+
+/* Для лучшей читаемости, делаем жирный текст наследуемым */
+.app-row:hover td strong,
+.app-row:hover td b,
+.app-row:hover td .fw-bold {
+    color: inherit !important;
+}
+
+/* Специфичные цвета для бейджей статусов при наведении */
+.app-row:hover .badge.bg-success {
+    background-color: var(--app-ok) !important;
+    color: white !important;
+}
+
+.app-row:hover .badge.bg-danger {
+    background-color: var(--app-nok) !important;
+    color: white !important;
+}
+
+.app-row:hover .badge.bg-secondary {
+    background-color: var(--text-muted) !important;
+    color: white !important;
+}
+
+/* Улучшаем бейджи при наведении в темной теме */
+[data-theme="dark"] .app-row:hover .badge.bg-success {
+    background-color: #34ce57 !important;
+    color: #000000 !important;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .app-row:hover .badge.bg-danger {
+    background-color: #ff6b6b !important;
+    color: #000000 !important;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .app-row:hover .badge.bg-secondary {
+    background-color: #8f9bae !important;
+    color: #000000 !important;
+    font-weight: 600;
+}
+
+/* Номер заявки при наведении */
+.app-row:hover td:first-child {
+    color: inherit !important;
+    font-weight: 600;
+}
+
+/* Для темной темы - более заметная тень */
+[data-theme="dark"] .app-row:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   КНОПКИ ЭКСПОРТА
+   ============================================ */
+
+.export-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ============================================
+   МОДАЛЬНОЕ ОКНО
+   ============================================ */
+
+.modal-content {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: var(--modal-header-bg);
+    color: var(--modal-header-text);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+.modal-title {
+    color: var(--modal-header-text);
+}
+
+.modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+    background: var(--modal-footer-bg);
+}
+
+.modal-xl {
+    max-width: 1400px;
+}
+
+/* Кнопка закрытия в темной теме */
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ============================================
+   ФОРМЫ И ПОЛЯ ВВОДА
+   ============================================ */
+
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+    padding: 6px 8px;
+    font-size: 0.9rem;
+    min-height: 35px;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 0.25rem var(--input-focus-shadow);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-check-input {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-label {
+    color: var(--text-primary);
+}
+
+/* Группы кнопок */
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.btn-group .btn-success,
+.btn-group .btn-danger {
+    color: white;
+    font-weight: 500;
+}
+
+/* ============================================
+   ФОНЫ ДЛЯ ЭТАПОВ В МОДАЛЬНОМ ОКНЕ
+   ============================================ */
+
+.bg-primary.bg-opacity-10 {
+    background-color: rgba(67, 97, 238, 0.05) !important;
+    border-left: 4px solid var(--primary) !important;
+}
+
+.bg-success.bg-opacity-10 {
+    background-color: rgba(6, 214, 160, 0.05) !important;
+    border-left: 4px solid var(--success) !important;
+}
+
+/* ============================================
+   УВЕДОМЛЕНИЯ
+   ============================================ */
+
+.alert {
+    animation: slideIn 0.3s ease;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: var(--app-ok-bg);
+    border-color: var(--app-ok);
+    color: var(--app-ok-text);
+}
+
+.alert-danger {
+    background-color: var(--app-nok-bg);
+    border-color: var(--app-nok);
+    color: var(--app-nok-text);
+}
+
+.alert-warning {
+    background-color: var(--warning-bg);
+    border-color: var(--warning-border);
+    color: var(--warning-text);
+}
+
+.alert-info {
+    background-color: var(--info-bg);
+    border-color: var(--info-border);
+    color: var(--info-text);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   КАЛЕНДАРЬ (DATEPICKER)
+   ============================================ */
+
+.datepicker-calendar {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    user-select: none;
+    background: var(--calendar-bg) !important;
+    border: 1px solid var(--calendar-border) !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 10px;
+    width: 280px;
+    color: var(--text-primary) !important;
+}
+
+.datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--calendar-header-bg);
+    border-radius: 4px 4px 0 0;
+}
+
+.datepicker-nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    color: var(--text-primary);
+}
+
+.datepicker-nav-btn:hover {
+    background-color: var(--bg-hover);
+}
+
+.datepicker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.datepicker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.datepicker-day {
+    text-align: center;
+    padding: 6px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    color: var(--text-primary);
+}
+
+.datepicker-day:hover {
+    background-color: var(--bg-hover) !important;
+}
+
+.datepicker-day:active {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+.datepicker-today {
+    background-color: var(--info-bg);
+    font-weight: bold;
+    color: var(--info-text);
+}
+
+.datepicker-today-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+.datepicker-today-btn:hover {
+    background-color: var(--primary-dark) !important;
+}
+
+/* ============================================
+   IMEI HELPER
+   ============================================ */
+
+#imei-image-tooltip {
+    position: absolute;
+    z-index: 1060;
+    background: var(--bg-secondary);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    max-width: 600px;
+    max-height: 400px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+    resize: both;
+    color: var(--text-primary);
+}
+
+#imei-image-tooltip:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+
+#imei-image-tooltip img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+.imei-helper-controls small {
+    color: var(--text-muted) !important;
+}
+
+/* Индикатор активной вставки */
+.imei-helper-active #panelSerial {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+@keyframes imeiTooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#imei-image-tooltip {
+    animation: imeiTooltipFadeIn 0.2s ease;
+}
+
+/* ============================================
+   СКРОЛЛБАР
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ
+   ============================================ */
+
+@media (max-width: 768px) {
+    .online-users {
+        top: 10px;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        min-width: 180px;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    .export-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .btn-sm {
+        width: 100%;
+    }
+
+    .chat-window {
+        width: 300px;
+        top: 70px;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .filter-chips {
+        gap: 5px;
+    }
+
+    .chip {
+        padding: 4px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .online-users {
+        min-width: 150px;
+        padding: 4px 10px;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px 4px;
+        font-size: 0.8rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 3px 4px;
+    }
+}
+
+/* ============================================
+   УТИЛИТЫ
+   ============================================ */
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.text-wrap {
+    white-space: normal !important;
+}
+
+.text-nowrap {
+    white-space: nowrap !important;
+}
+
+/* ============================================
+   ПОДСКАЗКА ДЛЯ ПС
+   ============================================ */
+
+.ps-tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ps-tooltip-icon:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-dark);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#ps-tooltip {
+    transition: opacity 0.2s ease;
+    animation: fadeIn 0.2s ease;
+}
+
+#ps-tooltip textarea {
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+}
+
+#ps-tooltip textarea:focus {
+    outline: none;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+/* Темная тема для подсказки */
+[data-theme="dark"] #ps-tooltip textarea {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] #ps-tooltip button.btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
