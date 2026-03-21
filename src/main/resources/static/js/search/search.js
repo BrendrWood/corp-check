@@ -15,7 +15,7 @@ App.search = {
                     <span class="visually-hidden">Поиск...</span>
                 </div>
                 <p class="mt-2">Выполняется поиск...</p>
-            </td></tr>
+            </td>
         `;
 
         try {
@@ -34,6 +34,10 @@ App.search = {
             if (!response.ok) throw new Error('Ошибка поиска');
 
             const result = await response.json();
+            
+            // СОХРАНЯЕМ РЕЗУЛЬТАТЫ В ГЛОБАЛЬНУЮ ПЕРЕМЕННУЮ ДЛЯ ЭКСПОРТА
+            window.currentSearchResults = result.results;
+            
             App.state.searchResults = result.results;
             App.state.applications = result.results;
 
@@ -53,12 +57,19 @@ App.search = {
                 if (dateStr) description.push(`дата ${dateStr}`);
 
                 descSpan.textContent = description.length ? `Найдено по: ${description.join(', ')}` : '';
-                exportBtn.style.display = 'inline-block';
+                
+                // ПОКАЗЫВАЕМ КНОПКУ ЭКСПОРТА
+                if (exportBtn) {
+                    exportBtn.style.display = 'inline-block';
+                    console.log('Export button shown, results count:', result.results.length);
+                }
 
                 setTimeout(App.ui.scrollToLast, 300);
             } else {
                 statsDiv.style.display = 'none';
-                exportBtn.style.display = 'none';
+                if (exportBtn) {
+                    exportBtn.style.display = 'none';
+                }
             }
 
         } catch (error) {
@@ -75,9 +86,15 @@ App.search = {
         App.state.currentSearchQuery = '';
         App.state.currentSearchDate = '';
         App.state.searchResults = [];
+        
+        // ОЧИЩАЕМ ГЛОБАЛЬНУЮ ПЕРЕМЕННУЮ
+        window.currentSearchResults = [];
 
-        document.getElementById('searchStats').style.display = 'none';
-        document.getElementById('exportSearchBtn').style.display = 'none';
+        const statsDiv = document.getElementById('searchStats');
+        const exportBtn = document.getElementById('exportSearchBtn');
+        
+        if (statsDiv) statsDiv.style.display = 'none';
+        if (exportBtn) exportBtn.style.display = 'none';
 
         App.ui.applyFilter(App.state.currentFilter);
     },
@@ -90,3 +107,21 @@ App.search = {
 window.performSearch = () => App.search.perform();
 window.resetSearch = () => App.search.reset();
 window.clearSearch = () => App.search.clear();
+
+// Добавляем функцию для ручного вызова экспорта из консоли для отладки
+window.debugExport = function() {
+    console.log('=== DEBUG EXPORT ===');
+    console.log('window.currentSearchResults:', window.currentSearchResults);
+    console.log('App.state.searchResults:', App.state.searchResults);
+    console.log('App.state.applications:', App.state.applications);
+    console.log('App.state.currentSearchQuery:', App.state.currentSearchQuery);
+    console.log('App.state.currentSearchDate:', App.state.currentSearchDate);
+    
+    const exportBtn = document.getElementById('exportSearchBtn');
+    console.log('Export button display:', exportBtn ? exportBtn.style.display : 'button not found');
+    
+    return {
+        hasResults: !!(window.currentSearchResults && window.currentSearchResults.length),
+        resultsCount: window.currentSearchResults ? window.currentSearchResults.length : 0
+    };
+};
