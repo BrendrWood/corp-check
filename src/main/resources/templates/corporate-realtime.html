@@ -31,6 +31,26 @@
             opacity: 1;
             color: #0d6efd;
         }
+        
+        /* Стили для кнопки звука в чате */
+        .chat-header .btn-outline-light {
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .chat-header .btn-outline-light:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        /* Анимация для уведомления */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .unread-badge {
+            animation: pulse 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -190,7 +210,7 @@
             <div style="max-height: calc(100vh - 300px); overflow-y: auto;">
                 <table class="table table-hover mb-0">
                     <thead>
-                    <tr>
+                     <tr>
                         <th style="width: 50px">#</th>
                         <th style="width: 130px">Номер заявки</th>
                         <th style="width: 150px">Инженер</th>
@@ -200,7 +220,7 @@
                         <th style="width: 70px">ОП1</th>
                         <th style="width: 70px">ОП2</th>
                         <th style="width: 50px">Действия</th>
-                    </tr>
+                     </tr>
                     </thead>
                     <tbody id="appsTableBody">
                     <!-- Данные загружаются динамически -->
@@ -248,33 +268,28 @@
 
 <script>
     // Глобальные переменные для сортировки
-    let currentSortOrder = null; // 'asc' - по возрастанию (свежие внизу), 'desc' - по убыванию (свежие вверху)
-    let originalApplications = []; // Храним исходный порядок заявок
+    let currentSortOrder = null;
+    let originalApplications = [];
     
-    // Функция для переключения сортировки по дате
     function toggleDateSort() {
         const icon = document.getElementById('dateSortIcon');
         
         if (currentSortOrder === null || currentSortOrder === 'desc') {
-            // Первое нажатие: сортировка по возрастанию (свежие даты внизу)
             currentSortOrder = 'asc';
-            icon.className = 'bi bi-arrow-down-up';
+            icon.className = 'bi bi-arrow-up';
             icon.classList.add('active');
             sortApplicationsByDate('asc');
         } else if (currentSortOrder === 'asc') {
-            // Второе нажатие: сортировка по убыванию (свежие даты вверху)
             currentSortOrder = 'desc';
-            icon.className = 'bi bi-arrow-down-up';
+            icon.className = 'bi bi-arrow-down';
             icon.classList.add('active');
             sortApplicationsByDate('desc');
         }
     }
     
-    // Функция сортировки заявок по дате
     function sortApplicationsByDate(order) {
         if (!App.state || !App.state.applications) return;
         
-        // Сохраняем исходный порядок при первой сортировке
         if (originalApplications.length === 0) {
             originalApplications = [...App.state.applications];
         }
@@ -294,27 +309,16 @@
         
         App.state.applications = sorted;
         
-        // Перерисовываем таблицу
         if (App.ui && App.ui.renderTable) {
             App.ui.renderTable();
         }
         
-        // Обновляем счетчик
         const appsCountSpan = document.getElementById('appsCount');
         if (appsCountSpan) {
             appsCountSpan.textContent = sorted.length;
         }
-        
-        // Показываем уведомление о сортировке
-        const message = order === 'asc' ? 'Сортировка: старые сверху, новые снизу' : 'Сортировка: новые сверху, старые снизу';
-        if (App.utils && App.utils.showNotification) {
-            App.utils.showNotification(message, 'info');
-        } else {
-            console.log(message);
-        }
     }
     
-    // Функция для сброса сортировки (возврат к исходному порядку)
     function resetSort() {
         if (originalApplications.length > 0) {
             App.state.applications = [...originalApplications];
@@ -330,34 +334,25 @@
         }
     }
     
-    // Переопределяем функцию filterApps, чтобы сбрасывать сортировку при смене фильтра
     const originalFilterApps = window.filterApps;
     window.filterApps = function(filterType) {
-        // Сбрасываем сортировку
         resetSort();
-        // Вызываем оригинальную функцию
         if (originalFilterApps) {
             originalFilterApps(filterType);
         }
     };
     
-    // Переопределяем функцию performSearch, чтобы сбрасывать сортировку при поиске
     const originalPerformSearch = window.performSearch;
     window.performSearch = function() {
-        // Сбрасываем сортировку
         resetSort();
-        // Вызываем оригинальную функцию
         if (originalPerformSearch) {
             originalPerformSearch();
         }
     };
     
-    // Переопределяем функцию clearSearch, чтобы сбрасывать сортировку
     const originalClearSearch = window.clearSearch;
     window.clearSearch = function() {
-        // Сбрасываем сортировку
         resetSort();
-        // Вызываем оригинальную функцию
         if (originalClearSearch) {
             originalClearSearch();
         }
