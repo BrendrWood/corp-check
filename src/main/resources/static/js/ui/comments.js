@@ -28,10 +28,10 @@ App.comments = {
             comments.push('нет формы 002');
         }
         if (!document.getElementById('avr')?.checked) {
-            comments.push('нет акта выполненных работ с подписью клиента');
+            comments.push('нет акта выполненных работ');
         }
         if (!document.getElementById('roads')?.checked) {
-            comments.push('нет фото объекта на карте со схемой подъездных путей');
+            comments.push('нет фото объекта на карте со схемой подъездных путей с указанием входов');
         }
         if (!document.getElementById('plan')?.checked) {
             comments.push('нет поэтажного плана');
