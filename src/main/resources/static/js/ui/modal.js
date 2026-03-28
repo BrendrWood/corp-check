@@ -3,12 +3,24 @@ console.log('modal.js загружен');
 
 App.modal = {
 
+    // Список проверяющих для выпадающих списков
+    inspectors: [
+        "Тебин Н.Д.",
+        "Хольмикангас Б.С.",
+        "Быстрюков Д.В."
+    ],
+
     getFormHtml: function(appNumber, engineerName) {
         const today = new Date();
         const day = String(today.getDate()).padStart(2, '0');
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const year = today.getFullYear();
         const formattedToday = `${day}.${month}.${year}`;
+
+        // Создаем HTML для выпадающего списка проверяющих
+        const inspectorOptions = this.inspectors.map(name => 
+            `<option value="${name}">${name}</option>`
+        ).join('');
 
         return `
             <div class="row">
@@ -18,7 +30,12 @@ App.modal = {
 
                         <div class="mb-2">
                             <label>Номер заявки *</label>
-                            <input type="text" class="form-control" id="appNumber" value="${appNumber || ''}" placeholder="Введите номер заявки" required>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="appNumber" value="${appNumber || ''}" placeholder="Введите номер заявки" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="window.copyAppNumberToClipboard()" title="Копировать номер заявки">
+                                    <i class="bi bi-files"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mb-2">
@@ -97,7 +114,10 @@ App.modal = {
                             </div>
                             <div class="col-6">
                                 <label>Проверяющий</label>
-                                <input type="text" class="form-control" id="stage1Inspector" value="${App.state.currentUser}">
+                                <select class="form-control" id="stage1Inspector">
+                                    <option value="">Выберите проверяющего...</option>
+                                    ${inspectorOptions}
+                                </select>
                             </div>
                         </div>
 
@@ -150,13 +170,8 @@ App.modal = {
                         </div>
 
                         <div class="mb-2 form-check">
-                            <input type="checkbox" class="form-check-input" id="avr" onchange="window.updateStage2Comment()">
-                            <label class="form-check-label" for="avr">АВР</label>
-                        </div>
-
-                        <div class="mb-2 form-check">
-                            <input type="checkbox" class="form-check-input" id="defect">
-                            <label class="form-check-label" for="defect">Деф.акт</label>
+                            <input type="checkbox" class="form-check-input" id="plan" onchange="window.updateStage2Comment()">
+                            <label class="form-check-label" for="plan">План</label>
                         </div>
 
                         <div class="mb-2 form-check">
@@ -165,18 +180,18 @@ App.modal = {
                         </div>
 
                         <div class="mb-2 form-check">
-                            <input type="checkbox" class="form-check-input" id="plan" onchange="window.updateStage2Comment()">
-                            <label class="form-check-label" for="plan">План</label>
-                        </div>
-
-                        <div class="mb-2 form-check">
-                            <input type="checkbox" class="form-check-input" id="fireAlarm">
-                            <label class="form-check-label" for="fireAlarm">ПС</label>
+                            <input type="checkbox" class="form-check-input" id="avr" onchange="window.updateStage2Comment()">
+                            <label class="form-check-label" for="avr">АВР</label>
                         </div>
 
                         <div class="mb-2 form-check">
                             <input type="checkbox" class="form-check-input" id="electronic" onchange="window.updateStage2Comment()">
                             <label class="form-check-label" for="electronic">Эл.чек-лист</label>
+                        </div>
+
+                        <div class="mb-2 form-check">
+                            <input type="checkbox" class="form-check-input" id="fireAlarm" onchange="window.toggleFireAlarmChecklist()">
+                            <label class="form-check-label" for="fireAlarm">ПС</label>
                         </div>
 
                         <div class="mb-2" id="fireAlarmBlock" style="display:none;">
@@ -186,6 +201,11 @@ App.modal = {
                                 <option value="NO">Нет</option>
                                 <option value="GOS_MONTAZH">Монтаж ГОС</option>
                             </select>
+                        </div>
+
+                        <div class="mb-2 form-check">
+                            <input type="checkbox" class="form-check-input" id="defect">
+                            <label class="form-check-label" for="defect">Деф.акт</label>
                         </div>
 
                         <div class="mb-2 form-check">
@@ -205,7 +225,10 @@ App.modal = {
                             </div>
                             <div class="col-6">
                                 <label>Проверяющий</label>
-                                <input type="text" class="form-control" id="stage2Inspector" value="${App.state.currentUser}">
+                                <select class="form-control" id="stage2Inspector">
+                                    <option value="">Выберите проверяющего...</option>
+                                    ${inspectorOptions}
+                                </select>
                             </div>
                         </div>
 
@@ -269,7 +292,6 @@ App.modal = {
         if (app.stageTwo) {
             App.utils.setChecked('rental', app.stageTwo.equipmentRental);
 
-            // Показываем блок комментария аренды, если чекбокс установлен
             if (app.stageTwo.equipmentRental) {
                 const block = document.getElementById('rentalCommentBlock');
                 if (block) block.style.display = 'block';
@@ -279,12 +301,12 @@ App.modal = {
             App.utils.setChecked('sticker', app.stageTwo.stickersStandard);
             App.utils.setChecked('photos', app.stageTwo.systemPhotos);
             App.utils.setChecked('form002', app.stageTwo.form002Filled);
-            App.utils.setChecked('avr', app.stageTwo.acceptanceCertificate);
-            App.utils.setChecked('defect', app.stageTwo.defectAct);
-            App.utils.setChecked('roads', app.stageTwo.accessRoads);
             App.utils.setChecked('plan', app.stageTwo.floorPlan);
-            App.utils.setChecked('fireAlarm', app.stageTwo.fireAlarm);
+            App.utils.setChecked('roads', app.stageTwo.accessRoads);
+            App.utils.setChecked('avr', app.stageTwo.acceptanceCertificate);
             App.utils.setChecked('electronic', app.stageTwo.electronicChecklist);
+            App.utils.setChecked('fireAlarm', app.stageTwo.fireAlarm);
+            App.utils.setChecked('defect', app.stageTwo.defectAct);
             App.utils.setChecked('issues', app.stageTwo.postInstallationIssues);
             App.utils.setChecked('incomplete', app.stageTwo.incompleteForm002);
 
@@ -352,12 +374,8 @@ App.modal = {
 
         const fireAlarm = document.getElementById('fireAlarm');
         if (fireAlarm) {
-            fireAlarm.addEventListener('change', function() {
-                const block = document.getElementById('fireAlarmBlock');
-                if (block) {
-                    block.style.display = this.checked ? 'block' : 'none';
-                }
-            });
+            fireAlarm.removeEventListener('change', this.toggleFireAlarmChecklist);
+            fireAlarm.addEventListener('change', this.toggleFireAlarmChecklist);
         }
 
         if (App.FIELDS) {
@@ -419,6 +437,45 @@ App.modal = {
         }
     },
 
+    toggleFireAlarmChecklist: function() {
+        const fireAlarm = document.getElementById('fireAlarm');
+        const block = document.getElementById('fireAlarmBlock');
+        if (block) {
+            block.style.display = fireAlarm && fireAlarm.checked ? 'block' : 'none';
+        }
+    },
+
+    copyAppNumberToClipboard: function() {
+        const appNumberField = document.getElementById('appNumber');
+        if (!appNumberField) return;
+        
+        const appNumber = appNumberField.value;
+        if (!appNumber) {
+            alert('Номер заявки пуст');
+            return;
+        }
+        
+        navigator.clipboard.writeText(appNumber).then(() => {
+            // Временная индикация успешного копирования
+            const btn = document.querySelector('#appNumber + button');
+            if (btn) {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check"></i>';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-outline-secondary');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-secondary');
+                }, 1500);
+            }
+        }).catch(err => {
+            console.error('Ошибка копирования:', err);
+            alert('Не удалось скопировать номер заявки');
+        });
+    },
+
     save: async function() {
         const appNumber = document.getElementById('appNumber')?.value;
         const engineerName = document.getElementById('engineerName')?.value;
@@ -462,13 +519,13 @@ App.modal = {
                 stickersStandard: document.getElementById('sticker')?.checked || false,
                 systemPhotos: document.getElementById('photos')?.checked || false,
                 form002Filled: document.getElementById('form002')?.checked || false,
-                accessRoads: document.getElementById('roads')?.checked || false,
                 floorPlan: document.getElementById('plan')?.checked || false,
+                accessRoads: document.getElementById('roads')?.checked || false,
+                acceptanceCertificate: document.getElementById('avr')?.checked || false,
+                electronicChecklist: document.getElementById('electronic')?.checked || false,
                 fireAlarm: document.getElementById('fireAlarm')?.checked || false,
                 fireAlarmChecklist: document.getElementById('fireAlarmChecklist')?.value || null,
-                acceptanceCertificate: document.getElementById('avr')?.checked || false,
                 defectAct: document.getElementById('defect')?.checked || false,
-                electronicChecklist: document.getElementById('electronic')?.checked || false,
                 postInstallationIssues: document.getElementById('issues')?.checked || false,
                 incompleteForm002: document.getElementById('incomplete')?.checked || false,
                 checkDate: document.getElementById('stage2Date')?.value,
@@ -679,3 +736,5 @@ window.copyToClipboard = (elementId, buttonElement) => App.modal.copyToClipboard
 window.saveApplication = () => App.modal.save();
 window.openCreateModal = () => App.modal.openCreate();
 window.openEditModal = (id) => App.modal.openEdit(id);
+window.copyAppNumberToClipboard = () => App.modal.copyAppNumberToClipboard();
+window.toggleFireAlarmChecklist = () => App.modal.toggleFireAlarmChecklist();
