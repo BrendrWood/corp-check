@@ -13,6 +13,25 @@
     <!-- Наши стили -->
     <link th:href="@{/css/corporate.css}" rel="stylesheet">
 
+    <style>
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+        .sortable-header:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        .sortable-header i {
+            margin-left: 5px;
+            font-size: 0.8em;
+            opacity: 0.5;
+        }
+        .sortable-header i.active {
+            opacity: 1;
+            color: #0d6efd;
+        }
+    </style>
 </head>
 <body>
 <!-- Индикатор блокировки -->
@@ -116,7 +135,6 @@
                     <button class="btn btn-sm btn-outline-success" onclick="exportToday()">
                         <i class="bi bi-calendar-day"></i> Сегодня
                     </button>
-                    <!-- НОВАЯ КНОПКА -->
                     <button class="btn btn-sm btn-success" onclick="exportProcessedToday()">
                         <i class="bi bi-check2-circle"></i> Обработано сегодня
                     </button>
@@ -176,7 +194,9 @@
                         <th style="width: 50px">#</th>
                         <th style="width: 130px">Номер заявки</th>
                         <th style="width: 150px">Инженер</th>
-                        <th style="width: 100px">Дата</th>
+                        <th style="width: 100px" class="sortable-header" id="dateHeader" onclick="toggleDateSort()">
+                            Дата <i id="dateSortIcon" class="bi bi-arrow-down-up"></i>
+                        </th>
                         <th style="width: 70px">ОП1</th>
                         <th style="width: 70px">ОП2</th>
                         <th style="width: 50px">Действия</th>
@@ -225,6 +245,124 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Глобальные переменные для сортировки
+    let currentSortOrder = null; // 'asc' - по возрастанию (свежие внизу), 'desc' - по убыванию (свежие вверху)
+    let originalApplications = []; // Храним исходный порядок заявок
+    
+    // Функция для переключения сортировки по дате
+    function toggleDateSort() {
+        const icon = document.getElementById('dateSortIcon');
+        
+        if (currentSortOrder === null || currentSortOrder === 'desc') {
+            // Первое нажатие: сортировка по возрастанию (свежие даты внизу)
+            currentSortOrder = 'asc';
+            icon.className = 'bi bi-arrow-down-up';
+            icon.classList.add('active');
+            sortApplicationsByDate('asc');
+        } else if (currentSortOrder === 'asc') {
+            // Второе нажатие: сортировка по убыванию (свежие даты вверху)
+            currentSortOrder = 'desc';
+            icon.className = 'bi bi-arrow-down-up';
+            icon.classList.add('active');
+            sortApplicationsByDate('desc');
+        }
+    }
+    
+    // Функция сортировки заявок по дате
+    function sortApplicationsByDate(order) {
+        if (!App.state || !App.state.applications) return;
+        
+        // Сохраняем исходный порядок при первой сортировке
+        if (originalApplications.length === 0) {
+            originalApplications = [...App.state.applications];
+        }
+        
+        const sorted = [...App.state.applications];
+        
+        sorted.sort((a, b) => {
+            let dateA = a.installationDate ? new Date(a.installationDate) : new Date(0);
+            let dateB = b.installationDate ? new Date(b.installationDate) : new Date(0);
+            
+            if (order === 'asc') {
+                return dateA - dateB;
+            } else {
+                return dateB - dateA;
+            }
+        });
+        
+        App.state.applications = sorted;
+        
+        // Перерисовываем таблицу
+        if (App.ui && App.ui.renderTable) {
+            App.ui.renderTable();
+        }
+        
+        // Обновляем счетчик
+        const appsCountSpan = document.getElementById('appsCount');
+        if (appsCountSpan) {
+            appsCountSpan.textContent = sorted.length;
+        }
+        
+        // Показываем уведомление о сортировке
+        const message = order === 'asc' ? 'Сортировка: старые сверху, новые снизу' : 'Сортировка: новые сверху, старые снизу';
+        if (App.utils && App.utils.showNotification) {
+            App.utils.showNotification(message, 'info');
+        } else {
+            console.log(message);
+        }
+    }
+    
+    // Функция для сброса сортировки (возврат к исходному порядку)
+    function resetSort() {
+        if (originalApplications.length > 0) {
+            App.state.applications = [...originalApplications];
+            currentSortOrder = null;
+            const icon = document.getElementById('dateSortIcon');
+            if (icon) {
+                icon.className = 'bi bi-arrow-down-up';
+                icon.classList.remove('active');
+            }
+            if (App.ui && App.ui.renderTable) {
+                App.ui.renderTable();
+            }
+        }
+    }
+    
+    // Переопределяем функцию filterApps, чтобы сбрасывать сортировку при смене фильтра
+    const originalFilterApps = window.filterApps;
+    window.filterApps = function(filterType) {
+        // Сбрасываем сортировку
+        resetSort();
+        // Вызываем оригинальную функцию
+        if (originalFilterApps) {
+            originalFilterApps(filterType);
+        }
+    };
+    
+    // Переопределяем функцию performSearch, чтобы сбрасывать сортировку при поиске
+    const originalPerformSearch = window.performSearch;
+    window.performSearch = function() {
+        // Сбрасываем сортировку
+        resetSort();
+        // Вызываем оригинальную функцию
+        if (originalPerformSearch) {
+            originalPerformSearch();
+        }
+    };
+    
+    // Переопределяем функцию clearSearch, чтобы сбрасывать сортировку
+    const originalClearSearch = window.clearSearch;
+    window.clearSearch = function() {
+        // Сбрасываем сортировку
+        resetSort();
+        // Вызываем оригинальную функцию
+        if (originalClearSearch) {
+            originalClearSearch();
+        }
+    };
+</script>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
