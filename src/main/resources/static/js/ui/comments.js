@@ -91,14 +91,15 @@ App.comments = {
         const commentField = document.getElementById('stage2Comment');
         
         // Маппинг чекбоксов на текст, который нужно добавить/удалить
+        // УБРАЛИ defect из списка
         const checkboxMapping = [
             { id: 'photos', text: 'нет фото объекта на карте со схемой подъездных путей с указанием входов' },
             { id: 'form002', text: 'нет формы 002' },
             { id: 'plan', text: 'нет поэтажного плана' },
             { id: 'roads', text: 'нет подъездных путей' },
             { id: 'avr', text: 'нет акта выполненных работ' },
-            { id: 'electronic', text: 'нет электронного чек-листа' },
-            { id: 'defect', text: 'нет дефектного акта' }
+            { id: 'electronic', text: 'нет электронного чек-листа' }
+            // defect (Деф.акт) - УБРАН из автозаполнения
         ];
         
         let finalComment = currentComment;
@@ -128,7 +129,7 @@ App.comments = {
             }
         }
         
-        // Сохраняем автоматические комментарии в state
+        // Сохраняем автоматические комментарии в state (без defect)
         App.state.autoCommentsStage2 = checkboxMapping
             .filter(m => document.getElementById(m.id)?.checked === false)
             .map(m => m.text);
