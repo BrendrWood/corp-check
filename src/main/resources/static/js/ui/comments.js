@@ -5,6 +5,20 @@ App.comments = {
     // Флаг, указывающий, что идет загрузка заявки (чтобы не запускать автообновление)
     isLoading: false,
     
+    // Функция удаления конкретного текста из комментария
+    removeTextFromComment: function(comment, textToRemove) {
+        if (!comment) return '';
+        
+        // Разбиваем комментарий на части по точке с запятой
+        let parts = comment.split(';').map(p => p.trim()).filter(p => p);
+        
+        // Удаляем часть, которая содержит искомый текст
+        parts = parts.filter(part => !part.includes(textToRemove));
+        
+        // Собираем обратно
+        return parts.join('; ');
+    },
+    
     // Функция обновления комментария этапа 1
     updateStage1: function() {
         // Если идет загрузка заявки - не обновляем комментарий
@@ -13,51 +27,53 @@ App.comments = {
         // Проверяем, инициализированы ли комментарии
         if (!App.state.commentsInitialized) return;
         
-        const autoComments = [];
+        // Получаем текущий комментарий
+        let currentComment = App.state.manualCommentStage1 || '';
+        const commentField = document.getElementById('stage1Comment');
         
-        // Собираем автоматические комментарии для этапа 1
-        // Комментарий добавляется, если чекбокс НЕ проставлен
-        if (document.getElementById('panicSignal')?.checked === false) {
-            autoComments.push('нет сигнала КТС 120/122');
-        }
-        if (document.getElementById('csmSignal')?.checked === false) {
-            autoComments.push('нет сигналов КТС на ЦСМ');
-        }
-        if (document.getElementById('arming')?.checked === false) {
-            autoComments.push('не работает пост/снятие');
-        }
-        if (document.getElementById('backup')?.checked === false) {
-            autoComments.push('нет резервного питания');
-        }
+        // Маппинг чекбоксов на текст, который нужно добавить/удалить
+        const checkboxMapping = [
+            { id: 'panicSignal', text: 'нет сигнала КТС 120/122' },
+            { id: 'csmSignal', text: 'нет сигналов КТС на ЦСМ' },
+            { id: 'arming', text: 'не работает пост/снятие' },
+            { id: 'backup', text: 'нет резервного питания' }
+        ];
         
-        // Сохраняем автоматические комментарии в state
-        App.state.autoCommentsStage1 = autoComments;
+        let finalComment = currentComment;
+        let hasChanges = false;
         
-        // Получаем текущий ручной комментарий (то, что пользователь ввел сам)
-        let manualComment = App.state.manualCommentStage1 || '';
-        
-        // Формируем финальный комментарий
-        let finalComment = manualComment;
-        
-        // Добавляем автоматические комментарии, если они есть
-        if (autoComments.length > 0) {
-            const autoText = autoComments.join('; ');
+        // Проходим по всем чекбоксам
+        for (const mapping of checkboxMapping) {
+            const checkbox = document.getElementById(mapping.id);
+            if (!checkbox) continue;
             
-            // ПРОВЕРКА: добавляем только если текст еще не содержится в комментарии
-            if (!App.comments.hasTextInComment(finalComment, autoText)) {
-                if (finalComment && finalComment.trim()) {
-                    finalComment = finalComment + '; ' + autoText;
-                } else {
-                    finalComment = autoText;
+            if (checkbox.checked === false) {
+                // Если чекбокс НЕ проставлен - добавляем текст
+                if (!App.comments.hasTextInComment(finalComment, mapping.text)) {
+                    if (finalComment && finalComment.trim()) {
+                        finalComment = finalComment + '; ' + mapping.text;
+                    } else {
+                        finalComment = mapping.text;
+                    }
+                    hasChanges = true;
+                }
+            } else {
+                // Если чекбокс ПРОСТАВЛЕН - удаляем текст
+                if (App.comments.hasTextInComment(finalComment, mapping.text)) {
+                    finalComment = App.comments.removeTextFromComment(finalComment, mapping.text);
+                    hasChanges = true;
                 }
             }
         }
         
-        // Обновляем поле комментария, только если значение изменилось
-        const commentField = document.getElementById('stage1Comment');
-        if (commentField && commentField.value !== finalComment) {
+        // Сохраняем автоматические комментарии в state
+        App.state.autoCommentsStage1 = checkboxMapping
+            .filter(m => document.getElementById(m.id)?.checked === false)
+            .map(m => m.text);
+        
+        // Обновляем поле комментария, если были изменения
+        if (hasChanges && commentField && commentField.value !== finalComment) {
             commentField.value = finalComment;
-            // Сохраняем обновленное значение в ручной комментарий
             App.state.manualCommentStage1 = finalComment;
         }
     },
@@ -70,60 +86,56 @@ App.comments = {
         // Проверяем, инициализированы ли комментарии
         if (!App.state.commentsInitialized) return;
         
-        const autoComments = [];
+        // Получаем текущий комментарий
+        let currentComment = App.state.manualCommentStage2 || '';
+        const commentField = document.getElementById('stage2Comment');
         
-        // Собираем автоматические комментарии для этапа 2
-        // Комментарий добавляется, если чекбокс НЕ проставлен
-        if (document.getElementById('photos')?.checked === false) {
-            autoComments.push('нет фото объекта на карте со схемой подъездных путей с указанием входов');
-        }
-        if (document.getElementById('form002')?.checked === false) {
-            autoComments.push('нет формы 002');
-        }
-        if (document.getElementById('plan')?.checked === false) {
-            autoComments.push('нет поэтажного плана');
-        }
-        if (document.getElementById('roads')?.checked === false) {
-            autoComments.push('нет подъездных путей');
-        }
-        if (document.getElementById('avr')?.checked === false) {
-            autoComments.push('нет акта выполненных работ');
-        }
-        if (document.getElementById('electronic')?.checked === false) {
-            autoComments.push('нет электронного чек-листа');
-        }
-        if (document.getElementById('defect')?.checked === false) {
-            autoComments.push('нет дефектного акта');
-        }
+        // Маппинг чекбоксов на текст, который нужно добавить/удалить
+        const checkboxMapping = [
+            { id: 'photos', text: 'нет фото объекта на карте со схемой подъездных путей с указанием входов' },
+            { id: 'form002', text: 'нет формы 002' },
+            { id: 'plan', text: 'нет поэтажного плана' },
+            { id: 'roads', text: 'нет подъездных путей' },
+            { id: 'avr', text: 'нет акта выполненных работ' },
+            { id: 'electronic', text: 'нет электронного чек-листа' },
+            { id: 'defect', text: 'нет дефектного акта' }
+        ];
         
-        // Сохраняем автоматические комментарии в state
-        App.state.autoCommentsStage2 = autoComments;
+        let finalComment = currentComment;
+        let hasChanges = false;
         
-        // Получаем текущий ручной комментарий
-        let manualComment = App.state.manualCommentStage2 || '';
-        
-        // Формируем финальный комментарий
-        let finalComment = manualComment;
-        
-        // Добавляем автоматические комментарии, если они есть
-        if (autoComments.length > 0) {
-            const autoText = autoComments.join('; ');
+        // Проходим по всем чекбоксам
+        for (const mapping of checkboxMapping) {
+            const checkbox = document.getElementById(mapping.id);
+            if (!checkbox) continue;
             
-            // ПРОВЕРКА: добавляем только если текст еще не содержится в комментарии
-            if (!App.comments.hasTextInComment(finalComment, autoText)) {
-                if (finalComment && finalComment.trim()) {
-                    finalComment = finalComment + '; ' + autoText;
-                } else {
-                    finalComment = autoText;
+            if (checkbox.checked === false) {
+                // Если чекбокс НЕ проставлен - добавляем текст
+                if (!App.comments.hasTextInComment(finalComment, mapping.text)) {
+                    if (finalComment && finalComment.trim()) {
+                        finalComment = finalComment + '; ' + mapping.text;
+                    } else {
+                        finalComment = mapping.text;
+                    }
+                    hasChanges = true;
+                }
+            } else {
+                // Если чекбокс ПРОСТАВЛЕН - удаляем текст
+                if (App.comments.hasTextInComment(finalComment, mapping.text)) {
+                    finalComment = App.comments.removeTextFromComment(finalComment, mapping.text);
+                    hasChanges = true;
                 }
             }
         }
         
-        // Обновляем поле комментария, только если значение изменилось
-        const commentField = document.getElementById('stage2Comment');
-        if (commentField && commentField.value !== finalComment) {
+        // Сохраняем автоматические комментарии в state
+        App.state.autoCommentsStage2 = checkboxMapping
+            .filter(m => document.getElementById(m.id)?.checked === false)
+            .map(m => m.text);
+        
+        // Обновляем поле комментария, если были изменения
+        if (hasChanges && commentField && commentField.value !== finalComment) {
             commentField.value = finalComment;
-            // Сохраняем обновленное значение в ручной комментарий
             App.state.manualCommentStage2 = finalComment;
         }
     },
@@ -159,8 +171,7 @@ App.comments = {
         setTimeout(() => {
             App.comments.isLoading = false;
             
-            // После загрузки проверяем, нужно ли обновить комментарии
-            // (на случай, если чекбоксы уже были установлены)
+            // После загрузки синхронизируем комментарии с текущим состоянием чекбоксов
             if (App.comments.updateStage1) App.comments.updateStage1();
             if (App.comments.updateStage2) App.comments.updateStage2();
         }, 50);
@@ -206,19 +217,14 @@ App.comments = {
         // Проверяем точное совпадение
         if (commentText.includes(searchText)) return true;
         
-        // Разбиваем поисковый текст на отдельные фразы (по точке с запятой)
-        const searchParts = searchText.split(';').map(p => p.trim());
+        // Разбиваем комментарий на части по точке с запятой
+        const commentParts = commentText.split(';').map(p => p.trim());
         
         // Проверяем каждую часть отдельно
-        for (const part of searchParts) {
-            if (part && commentText.includes(part)) {
-                return true;
-            }
+        for (const part of commentParts) {
+            if (part === searchText) return true;
+            if (part.includes(searchText)) return true;
         }
-        
-        // Проверяем первые 20 символов для длинных текстов
-        const shortSearch = searchText.substring(0, 20);
-        if (shortSearch && commentText.includes(shortSearch)) return true;
         
         return false;
     },
