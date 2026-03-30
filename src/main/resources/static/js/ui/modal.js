@@ -124,9 +124,14 @@ App.modal = {
                         <div class="mb-2 mt-2">
                             <label>Комментарий ОП1</label>
                             <textarea class="form-control" id="stage1Comment" rows="2" oninput="window.handleManualComment(1)"></textarea>
-                            <button class="btn btn-sm btn-outline-secondary mt-1 w-100" onclick="window.copyToClipboard('stage1Comment', this)">
-                                <i class="bi bi-clipboard"></i> Копировать
-                            </button>
+                            <div class="d-flex gap-2 mt-1">
+                                <button class="btn btn-sm btn-outline-primary w-50" onclick="window.autoFillComments(1)">
+                                    <i class="bi bi-magic"></i> Автозаполнение
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary w-50" onclick="window.copyToClipboard('stage1Comment', this)">
+                                    <i class="bi bi-clipboard"></i> Копировать
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mt-2">
@@ -235,9 +240,14 @@ App.modal = {
                         <div class="mb-2 mt-2">
                             <label>Комментарий ОП2</label>
                             <textarea class="form-control" id="stage2Comment" rows="2" oninput="window.handleManualComment(2)"></textarea>
-                            <button class="btn btn-sm btn-outline-secondary mt-1 w-100" onclick="window.copyToClipboard('stage2Comment', this)">
-                                <i class="bi bi-clipboard"></i> Копировать
-                            </button>
+                            <div class="d-flex gap-2 mt-1">
+                                <button class="btn btn-sm btn-outline-primary w-50" onclick="window.autoFillComments(2)">
+                                    <i class="bi bi-magic"></i> Автозаполнение
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary w-50" onclick="window.copyToClipboard('stage2Comment', this)">
+                                    <i class="bi bi-clipboard"></i> Копировать
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mt-2">
@@ -252,6 +262,92 @@ App.modal = {
                 </div>
             </div>
         `;
+    },
+
+    // Функция для автозаполнения комментариев
+    autoFillComments: function(stage) {
+        const commentField = document.getElementById(stage === 1 ? 'stage1Comment' : 'stage2Comment');
+        if (!commentField) return;
+        
+        // Получаем текущий ручной текст
+        let manualText = commentField.value.trim();
+        
+        // Собираем тексты для непроставленных чекбоксов
+        let autoTexts = [];
+        
+        if (stage === 1) {
+            // Этап 1
+            if (!document.getElementById('panicSignal')?.checked) {
+                autoTexts.push('сигнал тревоги КТС должен быть с 120/122 типом тревоги');
+            }
+            if (!document.getElementById('csmSignal')?.checked) {
+                autoTexts.push('не поступали сигналы КТС');
+            }
+            if (!document.getElementById('arming')?.checked) {
+                autoTexts.push('не поступали сигналы постановки/снятия с охраны без тревог');
+            }
+            if (!document.getElementById('backup')?.checked) {
+                autoTexts.push('не поступал сигнал переключения системы на резервный источник питания');
+            }
+        } else {
+            // Этап 2
+            if (!document.getElementById('photos')?.checked) {
+                autoTexts.push('нет фото объекта, панели, клавиатуры, СИМ');
+            }
+            if (!document.getElementById('form002')?.checked) {
+                autoTexts.push('нет формы 002');
+            }
+            if (!document.getElementById('plan')?.checked) {
+                autoTexts.push('нет поэтажного плана');
+            }
+            if (!document.getElementById('roads')?.checked) {
+                autoTexts.push('нет фото объекта на карте со схемой подъездных путей с указанием входов');
+            }
+            if (!document.getElementById('avr')?.checked) {
+                autoTexts.push('нет акта выполненных работ');
+            }
+            if (!document.getElementById('electronic')?.checked) {
+                autoTexts.push('нет чек-листа в электронном виде');
+            }
+            // defect (Деф.акт) - исключен из автозаполнения
+        }
+        
+        // Формируем финальный комментарий
+        let finalComment = '';
+        
+        // Добавляем ручной текст, если есть
+        if (manualText) {
+            finalComment = manualText;
+        }
+        
+        // Добавляем автоматические тексты
+        if (autoTexts.length > 0) {
+            const autoText = autoTexts.join('; ');
+            
+            // Проверяем, нет ли уже этих текстов в комментарии
+            if (!App.comments.hasTextInComment(finalComment, autoText)) {
+                if (finalComment) {
+                    finalComment = finalComment + '; ' + autoText;
+                } else {
+                    finalComment = autoText;
+                }
+            }
+        }
+        
+        // Обновляем поле комментария
+        commentField.value = finalComment;
+        
+        // Сохраняем в state
+        if (stage === 1) {
+            App.state.manualCommentStage1 = finalComment;
+        } else {
+            App.state.manualCommentStage2 = finalComment;
+        }
+        
+        // Показываем уведомление
+        if (App.utils && App.utils.showNotification) {
+            App.utils.showNotification('Комментарий обновлен', 'info');
+        }
     },
 
     fillData: function(app) {
@@ -456,7 +552,6 @@ App.modal = {
         }
         
         navigator.clipboard.writeText(appNumber).then(() => {
-            // Временная индикация успешного копирования
             const btn = document.querySelector('#appNumber + button');
             if (btn) {
                 const originalHtml = btn.innerHTML;
@@ -738,3 +833,4 @@ window.openCreateModal = () => App.modal.openCreate();
 window.openEditModal = (id) => App.modal.openEdit(id);
 window.copyAppNumberToClipboard = () => App.modal.copyAppNumberToClipboard();
 window.toggleFireAlarmChecklist = () => App.modal.toggleFireAlarmChecklist();
+window.autoFillComments = (stage) => App.modal.autoFillComments(stage);
