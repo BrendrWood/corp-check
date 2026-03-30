@@ -16,16 +16,17 @@ App.comments = {
         const autoComments = [];
         
         // Собираем автоматические комментарии для этапа 1
-        if (document.getElementById('panicSignal')?.checked) {
+        // Комментарий добавляется, если чекбокс НЕ проставлен
+        if (document.getElementById('panicSignal')?.checked === false) {
             autoComments.push('нет сигнала КТС 120/122');
         }
-        if (document.getElementById('csmSignal')?.checked) {
+        if (document.getElementById('csmSignal')?.checked === false) {
             autoComments.push('нет сигналов КТС на ЦСМ');
         }
-        if (document.getElementById('arming')?.checked) {
+        if (document.getElementById('arming')?.checked === false) {
             autoComments.push('не работает пост/снятие');
         }
-        if (document.getElementById('backup')?.checked) {
+        if (document.getElementById('backup')?.checked === false) {
             autoComments.push('нет резервного питания');
         }
         
@@ -72,25 +73,26 @@ App.comments = {
         const autoComments = [];
         
         // Собираем автоматические комментарии для этапа 2
-        if (document.getElementById('photos')?.checked) {
+        // Комментарий добавляется, если чекбокс НЕ проставлен
+        if (document.getElementById('photos')?.checked === false) {
             autoComments.push('нет фото объекта на карте со схемой подъездных путей с указанием входов');
         }
-        if (document.getElementById('form002')?.checked) {
+        if (document.getElementById('form002')?.checked === false) {
             autoComments.push('нет формы 002');
         }
-        if (document.getElementById('plan')?.checked) {
+        if (document.getElementById('plan')?.checked === false) {
             autoComments.push('нет поэтажного плана');
         }
-        if (document.getElementById('roads')?.checked) {
+        if (document.getElementById('roads')?.checked === false) {
             autoComments.push('нет подъездных путей');
         }
-        if (document.getElementById('avr')?.checked) {
+        if (document.getElementById('avr')?.checked === false) {
             autoComments.push('нет акта выполненных работ');
         }
-        if (document.getElementById('electronic')?.checked) {
+        if (document.getElementById('electronic')?.checked === false) {
             autoComments.push('нет электронного чек-листа');
         }
-        if (document.getElementById('defect')?.checked) {
+        if (document.getElementById('defect')?.checked === false) {
             autoComments.push('нет дефектного акта');
         }
         
