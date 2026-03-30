@@ -5,7 +5,7 @@ App.comments = {
     // Флаг, указывающий, что идет загрузка заявки (чтобы не запускать автообновление)
     isLoading: false,
     
-    // Функция удаления конкретного текста из комментария
+    // Функция удаления конкретного текста из комментария (оставлена на случай использования)
     removeTextFromComment: function(comment, textToRemove) {
         if (!comment) return '';
         
@@ -19,126 +19,16 @@ App.comments = {
         return parts.join('; ');
     },
     
-    // Функция обновления комментария этапа 1
+    // Функция обновления комментария этапа 1 - ОТКЛЮЧЕНА (автозаполнение только по кнопке)
     updateStage1: function() {
-        // Если идет загрузка заявки - не обновляем комментарий
-        if (App.comments.isLoading) return;
-        
-        // Проверяем, инициализированы ли комментарии
-        if (!App.state.commentsInitialized) return;
-        
-        // Получаем текущий комментарий
-        let currentComment = App.state.manualCommentStage1 || '';
-        const commentField = document.getElementById('stage1Comment');
-        
-        // Маппинг чекбоксов на текст, который нужно добавить/удалить
-        const checkboxMapping = [
-            { id: 'panicSignal', text: 'нет сигнала КТС 120/122' },
-            { id: 'csmSignal', text: 'нет сигналов КТС на ЦСМ' },
-            { id: 'arming', text: 'не работает пост/снятие' },
-            { id: 'backup', text: 'нет резервного питания' }
-        ];
-        
-        let finalComment = currentComment;
-        let hasChanges = false;
-        
-        // Проходим по всем чекбоксам
-        for (const mapping of checkboxMapping) {
-            const checkbox = document.getElementById(mapping.id);
-            if (!checkbox) continue;
-            
-            if (checkbox.checked === false) {
-                // Если чекбокс НЕ проставлен - добавляем текст
-                if (!App.comments.hasTextInComment(finalComment, mapping.text)) {
-                    if (finalComment && finalComment.trim()) {
-                        finalComment = finalComment + '; ' + mapping.text;
-                    } else {
-                        finalComment = mapping.text;
-                    }
-                    hasChanges = true;
-                }
-            } else {
-                // Если чекбокс ПРОСТАВЛЕН - удаляем текст
-                if (App.comments.hasTextInComment(finalComment, mapping.text)) {
-                    finalComment = App.comments.removeTextFromComment(finalComment, mapping.text);
-                    hasChanges = true;
-                }
-            }
-        }
-        
-        // Сохраняем автоматические комментарии в state
-        App.state.autoCommentsStage1 = checkboxMapping
-            .filter(m => document.getElementById(m.id)?.checked === false)
-            .map(m => m.text);
-        
-        // Обновляем поле комментария, если были изменения
-        if (hasChanges && commentField && commentField.value !== finalComment) {
-            commentField.value = finalComment;
-            App.state.manualCommentStage1 = finalComment;
-        }
+        // Автозаполнение отключено - ничего не делаем
+        return;
     },
     
-    // Функция обновления комментария этапа 2
+    // Функция обновления комментария этапа 2 - ОТКЛЮЧЕНА (автозаполнение только по кнопке)
     updateStage2: function() {
-        // Если идет загрузка заявки - не обновляем комментарий
-        if (App.comments.isLoading) return;
-        
-        // Проверяем, инициализированы ли комментарии
-        if (!App.state.commentsInitialized) return;
-        
-        // Получаем текущий комментарий
-        let currentComment = App.state.manualCommentStage2 || '';
-        const commentField = document.getElementById('stage2Comment');
-        
-        // Маппинг чекбоксов на текст, который нужно добавить/удалить
-        // defect (Деф.акт) - УБРАН из автозаполнения
-        const checkboxMapping = [
-            { id: 'photos', text: 'нет фото объекта на карте со схемой подъездных путей с указанием входов' },
-            { id: 'form002', text: 'нет формы 002' },
-            { id: 'plan', text: 'нет поэтажного плана' },
-            { id: 'roads', text: 'нет подъездных путей' },
-            { id: 'avr', text: 'нет акта выполненных работ' },
-            { id: 'electronic', text: 'нет электронного чек-листа' }
-            // defect (Деф.акт) - НЕ участвует в автозаполнении
-        ];
-        
-        let finalComment = currentComment;
-        let hasChanges = false;
-        
-        // Проходим по всем чекбоксам
-        for (const mapping of checkboxMapping) {
-            const checkbox = document.getElementById(mapping.id);
-            if (!checkbox) continue;
-            
-            if (checkbox.checked === false) {
-                // Если чекбокс НЕ проставлен - добавляем текст
-                if (!App.comments.hasTextInComment(finalComment, mapping.text)) {
-                    if (finalComment && finalComment.trim()) {
-                        finalComment = finalComment + '; ' + mapping.text;
-                    } else {
-                        finalComment = mapping.text;
-                    }
-                    hasChanges = true;
-                }
-            } else {
-                // Если чекбокс ПРОСТАВЛЕН - удаляем текст
-                if (App.comments.hasTextInComment(finalComment, mapping.text)) {
-                    finalComment = App.comments.removeTextFromComment(finalComment, mapping.text);
-                    hasChanges = true;
-                }
-            }
-        }
-        
-        // Сохраняем автоматические комментарии в state
-        App.state.autoCommentsStage2 = checkboxMapping
-            .filter(m => document.getElementById(m.id)?.checked === false)
-            .map(m => m.text);
-        
-        // Обновляем поле комментария, если были изменения
-        if (hasChanges && commentField && commentField.value !== finalComment) {
-            commentField.value = finalComment;
-            App.state.manualCommentStage2 = finalComment;
-        }
+        // Автозаполнение отключено - ничего не делаем
+        return;
     },
     
     // Функция инициализации комментариев при загрузке заявки
@@ -168,13 +58,9 @@ App.comments = {
         // Помечаем, что комментарии инициализированы
         App.state.commentsInitialized = true;
         
-        // Выключаем режим загрузки после того, как поля заполнены
+        // Выключаем режим загрузки
         setTimeout(() => {
             App.comments.isLoading = false;
-            
-            // После загрузки синхронизируем комментарии с текущим состоянием чекбоксов
-            if (App.comments.updateStage1) App.comments.updateStage1();
-            if (App.comments.updateStage2) App.comments.updateStage2();
         }, 50);
     },
     
@@ -211,7 +97,7 @@ App.comments = {
         if (stage2Field) stage2Field.value = '';
     },
     
-    // Функция проверки, есть ли уже текст в комментарии
+    // Функция проверки, есть ли уже текст в комментарии (используется кнопкой автозаполнения)
     hasTextInComment: function(commentText, searchText) {
         if (!commentText || !searchText) return false;
         
@@ -230,11 +116,10 @@ App.comments = {
         return false;
     },
     
-    // Функция для полной синхронизации комментариев с чекбоксами
+    // Функция для полной синхронизации комментариев с чекбоксами (отключена)
     syncWithCheckboxes: function() {
-        App.comments.isLoading = false;
-        App.comments.updateStage1();
-        App.comments.updateStage2();
+        // Автозаполнение отключено - ничего не делаем
+        return;
     }
 };
 
